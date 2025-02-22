@@ -1,0 +1,101 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Query Interface</title>
+    <style>
+        #result {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <button id="speakButton">Speak</button>
+    <div id="result"></div>
+
+    <script>
+        // Create a global variable for the utterance
+        let utterance = new SpeechSynthesisUtterance();
+
+        const speakButton = document.getElementById('speakButton');
+        const resultDiv = document.getElementById('result');
+
+        speakButton.addEventListener('click', function() {
+            const recognition = new window.webkitSpeechRecognition();
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.addEventListener('result', function(event) {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
+
+                if (event.results[0].isFinal) {
+                    // Clear previous results
+                    resultDiv.innerHTML = '';
+
+                    fetch('http://127.0.0.1:8000/rerank/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query: transcript, count: 5 })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // Announce that the search results are ready
+                        utterance.text = `Search results for ${transcript} are here.`;
+                        window.speechSynthesis.speak(utterance);
+                        data.forEach((item, index) => {
+                            // Create a new div element for each item
+                            const itemDiv = document.createElement('div');
+                            // Show all the details in the tab with clear separation
+                            itemDiv.innerHTML = `<strong>Title:</strong> ${item.title}<br>
+                                                 <strong>Description:</strong> ${item.description.split(' ').slice(0, 20).join(' ')}...<br>
+                                                 <strong>Published at:</strong> ${item.publishedAt}<br>
+                                                 <strong>Length:</strong> ${item.length}<br>
+                                                 <strong>View count:</strong> ${item.viewCount}`;
+                            itemDiv.style.cursor = 'pointer';
+
+                            // Add a click event listener
+                            itemDiv.addEventListener('click', function() {
+                                utterance.text = `${item.title}. ${item.description.split(' ').slice(0, 20).join(' ')}. Published at ${item.publishedAt}. Length is ${item.length}. View count is ${item.viewCount}.`;
+                                window.speechSynthesis.speak(utterance);
+                            });
+
+                            // Add a double click event listener
+                            itemDiv.addEventListener('dblclick', function() {
+                                window.location.href = item.url;
+                            });
+
+                            // Append the item div to the result div
+                            resultDiv.appendChild(itemDiv);
+                        });
+                    })
+                    .catch(error => {
+                        console.log('There was a problem with the fetch operation: ' + error.message);
+                    });
+
+                }
+            });
+
+            recognition.start();
+        });
+    </script>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Query Interface</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</head>
+<body>
+    <button id="speakButton">Speak</button>
+    <div id="query"></div>
+    <div id="result"></div>
+    <script src="/static/script.js"></script>
+</body>
+</html>

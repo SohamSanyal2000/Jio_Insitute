@@ -1,0 +1,144 @@
+Create Virtual environemnt
+python -m venv .venv
+
+Activate Virtual environment
+.venv\\Scripts\\activate
+
+error = cannot be loaded because running scripts is disabled on this system. For more information, see about_Execution_Policies at https:/go.microsoft.com/fwlink/?LinkID=135170
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+To setback the setting to restircted mode
+Set-ExecutionPolicy -ExecutionPolicy Restricted -Scope CurrentUser
+
+Deactivate Virtual environment
+deactivate
+
+Delete the Virtuual environment
+rm -r venv
+
+
+Python 3.10 or lower i have used Python 3.9 else there will be error in installing torch
+
+pip install uvicorn
+pip install FastAPI
+pip install pandas
+pip install transformers
+pip install torch
+pip install youtube_transcript_api
+pip install google-api-python-client
+pip install langdetect
+
+youtube api key = AIzaSyD0o01imQSCtnPlvopheI7-_cHV-14hxwU
+You can get it by:
+1. First go to Google Developers Console in browser
+2. Log in to Google Developers Console: You need a Google Account to access the Google API Console2.
+3. Create a New Project: On the new project dashboard, click Explore & Enable APIs.
+4. Enable the API: In the library, navigate to YouTube Data API v3 under YouTube APIs. Make sure the status is ON for the YouTube Data API v3.
+5. Create a Credential: A screen will appear with the API key.
+
+Running on local servers with front-end
+In terminal:
+uvicorn sample_rest_server:app --reload
+Open index.html in microsoft edge(right click on index.html and select openwith microsoft edge)
+not chrome as speaking out feature is disabled in chrome after sometime i don't know why will very make available for chrome also.
+
+Running on local servers without front-end
+In terminal:
+uvicorn sample_rest_server:app --reload
+In browser: 
+http://127.0.0.1:8000/rerank/?query=Biryani&count=5  #for running through local host
+
+Create Requirement.txt for creating docker image:
+pip freeze > requirements.txt
+
+
+Creating a Dockerfile in Visual Studio Code (VSCode):
+1. Open VSCode: Launch Visual Studio Code and open your project directory.
+2. Open the Command Palette: You can open the Command Palette by pressing Ctrl+Shift+P on Windows/Linux.
+3. Create Dockerfile: Type Docker: Add Docker Files to Workspace in the Command Palette and select it.
+   This command will generate a Dockerfile and a .dockerignore file and add them to your workspace
+
+To build docker image:
+docker build -t my_docker_image .
+You can build the Docker image by right-clicking the Dockerfile in the navigation panel and selecting Build Image
+
+Running the docker image:
+In terminal:
+docker run -p 8040:5500 my_docker_image
+In Browser:
+http://127.0.0.1:8040/rerank/?query=Biryani&count=5 #for running through docker-file.
+
+
+For Deploying in Cloud follow the pdf in the folder:
+Deploy Python FastAPI using Azure Container Registry _ Help_Follow_it.pdf
+
+Registry Name : TestFastAPIArticle
+Login server  : testfastapiarticle.azurecr.io
+username      : TestFastAPIArticle
+
+docker login [Your Azure Login server URL] -u [Username] -p [Password]
+E.g docker login testfastapiarticle.azurecr.io -u TestFastAPIArticle -p Your_Password
+
+Create requirements.txt:
+pip freeze > requirements.txt
+
+Building the docker image
+docker build -t [Azure Login server]/[Container name]:[Tag] .
+E.g docker build -t testfastapiarticle.azurecr.io/testfastapi2:v2 .
+Don't get confused you can give any name you wish for Container name and tag.
+
+Running the docker image:
+E.g 
+In Terminal:
+docker run -p 8040:80 [Azure Login Server]/[Container name]:[Tag]
+docker run -p 8040:5500 testfastapiarticle.azurecr.io/testfastapi2:v2
+In Browser:
+http://127.0.0.1:8040/rerank/?query=Biryani&count=5 #for running through docker-file.
+
+Pushing the docker image to cloud:
+docker push [Azure Login server]/[Container name]:[Tag]
+E.g docker push testfastapiarticle.azurecr.io/testfastapi2:v2
+
+Running from cloud
+http://pssm318.azurewebsites.net/rerank/?query=palak&count=2
+
+
+Step-by-step guide when deploying with front-end:
+
+1. Modify your JavaScript code: Replace the hardcoded URL in your fetch command with an environment variable. For example:
+JavaScript
+
+let BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
+
+fetch(`${BASE_URL}/rerank/`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query: transcript, count: 5 })
+})
+In this code, process.env.BASE_URL will be the URL of your deployed application when running in Azure, 
+and 'http://localhost:8000' when running locally.
+
+2. Build your Docker image: Include your updated JavaScript code in the Docker image. If all your files (HTML, CSS, JS, and Python) 
+are in the same directory, your Dockerfile would look something like this:
+FROM python:3.10
+
+WORKDIR /app
+COPY . /app
+RUN pip install -r requirements.txt
+
+CMD [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80" ]
+
+This Dockerfile copies everything from your current directory (including your HTML, CSS, JS, and Python files) 
+into the /app directory in the Docker image.
+
+3. Push your Docker image to a registry: After building your Docker image, 
+you can push it to a Docker registry such as Docker Hub or Azure Container Registry.
+
+4. Create an Azure App Service: In the Azure portal, create a new App Service and configure it 
+to use the Docker image you just pushed to the registry.
+
+5. Set the BASE_URL environment variable in Azure: In the Azure portal, navigate to your App Service, then go to the “Configuration” page. 
+In the “Application settings” section, click “New application setting”. 
+Enter BASE_URL as the name and the URL of your App Service as the value

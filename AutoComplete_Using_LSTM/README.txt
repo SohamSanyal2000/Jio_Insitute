@@ -1,0 +1,12 @@
+
+Extracting Features From Catalog.py 
+This code extracts features from the Fynd Catalog JSON file. It processes each dictionary in the input file, extracting values such as product name, URL, media information, category, and category URL. The extracted information is then written to a new JSON file. Additionally, the code creates a cleaned and unique list of words from the catalog names, removing special characters, repeated words, and digits, and saves this list in another JSON file named "List Of Unique Words.json".
+
+Paulson_Spellcheck_App.py
+This code builds a spell correction application using Streamlit. It loads a list of unique words from a JSON file, preprocesses them, generates bigrams, and trains a Word2Vec model. The application allows users to input a sentence, suggests corrections for each word based on vocabulary matching, N-grams, Word2Vec similarity, and edit distance. The corrected sentence is then displayed using Streamlit's user interface. 
+
+Streamlit_Autosuggest_App.py
+This code defines a Streamlit app for an LSTM-based autosuggest feature for an e-commerce catalog. It loads a pre-trained LSTM model for product search, utilizes NLTK, and Gensim, for spell checking, and presents matching products along with their titles, thumbnails, and links. The app also provides an "About" section explaining the libraries used and the functionality of the app, allowing users to explore categories with clickable links based on matching products. The semantic_search function conducts a semantic search by measuring the similarity between a given search query and a list of categories using spaCy's pre-trained English word vectors. It returns the top N matching categories, sorted by similarity, based on a specified threshold.
+
+Training LSTM Model.py
+This code is a script for training an LSTM model on library titles extracted from a JSON file ("Extracted Features.json"). It tokenizes the titles, generates input sequences for training, and builds a sequential model with an embedding layer, LSTM layer, and a dense layer with softmax activation. The model is compiled with categorical crossentropy loss and trained for 5 epochs. The trained model is saved to a file ("LSTM model.h5"), and the script also includes a function to plot the learning curve showing the loss over epochs using Matplotlib.
